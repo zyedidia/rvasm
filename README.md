@@ -13,6 +13,10 @@ Caveats:
 * Not extensively tested (see `testdata` for tests).
 * `li` pseudo-instruction does not support full 32-bit immediates.
 
+rvasm also supports full RISC-V RV32gc disassembly via the
+[deadsy/rvda](https://github.com/deadsy/rvda) package. Use the `-disas` flag to
+disassemble.
+
 # Usage
 
 rvasm will print the instructions in hex format when given an assembly program.
@@ -27,6 +31,9 @@ ff718393
 004282b3
 ...
 ```
+
+Use the `-raw` flag to dump the bytes directly instead of using the hex
+representation.
 
 rvasm assumes the base address of the machine code to be 0, but you can change
 this with the `-base` flag.
