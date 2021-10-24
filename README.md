@@ -27,3 +27,6 @@ ff718393
 004282b3
 ...
 ```
+
+rvasm assumes the base address of the machine code to be 0, but you can change
+this with the `-base` flag.
