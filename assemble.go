@@ -1,6 +1,7 @@
 package rvasm
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io"
 )
@@ -42,7 +43,7 @@ func AssembleAST(ast *RV32i, base uint32) Program {
 	}
 
 	addr = 0
-	prog := make(Program, 0, len(ast.Ops))
+	prog := make(Program, 0, len(newops))
 	for _, op := range newops {
 		if op.Label != "" {
 			continue
@@ -105,4 +106,15 @@ func (p Program) EncodeToHex() []string {
 		s[i] = fmt.Sprintf("%08x", insn)
 	}
 	return s
+}
+
+func (p Program) EncodeToBin() []byte {
+	const isz = 4
+	mcode := make([]byte, isz*len(p))
+
+	for i, insn := range p {
+		binary.LittleEndian.PutUint32(mcode[i*isz:], insn)
+	}
+
+	return mcode
 }
