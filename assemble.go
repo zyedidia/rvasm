@@ -13,10 +13,10 @@ func Assemble(fname string, r io.Reader, base uint32) (Program, error) {
 	if err != nil {
 		return nil, err
 	}
-	return AssembleAST(ast, base), nil
+	return AssembleAST(ast, base)
 }
 
-func AssembleAST(ast *RV32i, base uint32) Program {
+func AssembleAST(ast *RV32i, base uint32) (Program, error) {
 	labels := make(map[string]uint32)
 
 	// resolve labels
@@ -49,7 +49,10 @@ func AssembleAST(ast *RV32i, base uint32) Program {
 			continue
 		}
 		var rd, rs1, rs2, imm uint32
-		insn := Insns[op.Inst.Name]
+		insn, ok := Insns[op.Inst.Name]
+		if !ok {
+			return nil, fmt.Errorf("invalid instruction `%v`", op.Inst)
+		}
 		switch insn.Type {
 		case BType:
 			rs1 = op.Inst.Args[0].Na.Reg()
@@ -97,7 +100,7 @@ func AssembleAST(ast *RV32i, base uint32) Program {
 		addr += isize(op.Inst)
 	}
 
-	return prog
+	return prog, nil
 }
 
 func (p Program) EncodeToHex() []string {

@@ -13,7 +13,7 @@ var rv32iLexer = lexer.MustSimple([]lexer.Rule{
 	{`Ident`, `[_@.a-zA-Z][a-zA-Z_\d]*`, nil},
 	{`Number`, `[-+]?(0x)?[0-9a-fA-F]+\b`, nil},
 	{`Punct`, `[,:()]`, nil},
-	{`Newline`, `\n`, nil},
+	{`Newline`, `\r?\n`, nil},
 	{"comment", `//.*|/\*.*?\*/`, nil},
 	{"whitespace", `\s+`, nil},
 })
@@ -35,7 +35,7 @@ type Operation struct {
 
 type Inst struct {
 	Name string `@Ident`
-	Args []*Arg `( @@ ( "," @@ )* )? Newline*`
+	Args []*Arg `( @@ ( "," @@ )* )? (Newline+|EOF)`
 }
 
 type Arg struct {
@@ -58,6 +58,10 @@ func (n *NormalArg) IsReg() bool {
 }
 
 func (n *NormalArg) Reg() uint32 {
+	// TODO: fix this
+	if !n.IsReg() {
+		panic(fmt.Sprintf("%s is not a reg", n.Val))
+	}
 	return Reg[n.Val]
 }
 
@@ -67,7 +71,11 @@ func (n *NormalArg) Imm(locs map[string]uint32, rel uint32) uint32 {
 	} else if v, err := strconv.ParseUint(n.Val, 0, 32); err == nil {
 		return uint32(v)
 	}
-	return locs[n.Val] - rel
+	// TODO: fix this
+	if l, ok := locs[n.Val]; ok {
+		return l - rel
+	}
+	panic(fmt.Sprintf("invalid label: %s", n.Val))
 }
 
 func (o *Operation) String() string {
