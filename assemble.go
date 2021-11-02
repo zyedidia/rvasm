@@ -87,7 +87,7 @@ func AssembleAST(ast *RV32i, base uint32) (Program, error) {
 			imm = op.Inst.Args[1].Na.Imm(labels, 0)
 		case JType:
 			rd = op.Inst.Args[0].Na.Reg()
-			imm = (op.Inst.Args[1].Na.Imm(labels, 0) + base) / 8
+			imm = op.Inst.Args[1].Na.Imm(labels, addr) + base
 		case EType:
 			imm = funct12[op.Inst.Name]
 		case PType:
