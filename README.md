@@ -37,3 +37,12 @@ representation.
 
 rvasm assumes the base address of the machine code to be 0, but you can change
 this with the `-base` flag.
+
+rvasm will also assemble input passed via stdin if there are no input files.
+This can be quite useful for quickly generating machine code for individual
+instructions:
+
+```
+$ echo "li t0, 42" | rvasm
+02a00293
+```
